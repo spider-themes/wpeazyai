@@ -5,7 +5,7 @@ if (file_exists("../../../../wp-load.php"))
 		require_once("../../../../wp-load.php");
 	}
 // Function to send a request to OpenAI's API
-function openai_request($prompt) {
+function eazyai_openai_request($prompt) {
 
    global $wpdb;
    

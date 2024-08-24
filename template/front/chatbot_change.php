@@ -147,11 +147,11 @@ div#chatmsg {
 <script>
 var $j = jQuery;
 
-function openForm() {
+function eazyai_openForm() {
   document.getElementById("myForm").style.display = "block";
 }
 
-function closeForm() {
+function eazyai_closeForm() {
   document.getElementById("myForm").style.display = "none";
 }
 
@@ -168,7 +168,7 @@ $j(document).ready(function() {
 	});
 });
 
-function sendReceive(msg)
+function eazyai_sendReceive(msg)
 {
 	$j.post( "<?php echo WP_PLUGIN_URL . '/'.basename( plugin_dir_path( dirname( __FILE__ , 2 ) ) ).'/api/chat_data.php' ; ?>", { msg: msg })
 	  .done(function( data ) {
