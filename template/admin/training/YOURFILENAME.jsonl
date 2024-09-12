@@ -1,2 +1,0 @@
-{"messages": [{"role": "system", "content": "I prefer same data"}, {"role": "user", "content": "one"}, {"role": "assistant", "content": ""}]}
-{"messages": [{"role": "system", "content": "I prefer same data"}, {"role": "user", "content": "two"}, {"role": "assistant", "content": ""}]}

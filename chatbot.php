@@ -40,26 +40,7 @@
 		global $wpdb;
 		global $your_db_name;
 		$charset_collate = $wpdb->get_charset_collate();
-	 
-		 /*$sql1 = "  CREATE TABLE ".$wpdb->prefix ."chatbot (
-					  `id` int(10) NOT NULL AUTO_INCREMENT,		
-					  `question` text,
-                      `answer` text,
-					  `created_at` datetime DEFAULT NULL,
-					  `updated_at` datetime DEFAULT NULL,
-					   UNIQUE KEY id (id)
-					) $charset_collate;";
-					
-		  $sql2 = "INSERT INTO ".$wpdb->prefix ."chatbot ( `question`, `answer`, `created_at`, `updated_at`) VALUES
-						( 'Hi', 'Welcome to O2. How can I help you today?\r\n', '2019-06-07 06:39:34', '2019-06-07 10:28:11'),
-						( 'How may I buy a product?', 'Register & Login add product and do online order ', '2019-06-07 06:40:33', NULL),
-						( 'what about delivery', 'Delivery is within 7 days from your orders', '2019-06-07 06:41:11', NULL),
-						( 'hello', 'Hi, How can I help you?\r\n\r\n', '2019-06-07 10:53:56', '2019-12-17 00:00:00');
-						";	
-			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-			dbDelta($sql1);
-			dbDelta($sql2);*/
-			
+
 			$sql1 = "  CREATE TABLE ".$wpdb->prefix ."settings (
 					  `id` int(10) NOT NULL AUTO_INCREMENT,	
 					  `api_key`  varchar(127) DEFAULT NULL,
