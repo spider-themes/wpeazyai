@@ -16,7 +16,15 @@ function wpeazyai_admin_page() {
     if (!current_user_can('manage_options')) {
         return;
     }
-    
+    // Add screen options
+    add_screen_option('per_page', array(
+        'label' => __('Topics per page', 'wp-eazyai-chatbot'),
+        'default' => 20,
+        'option' => 'topics_per_page'
+    ));
+    // enqueue admin styles
+    wp_enqueue_style('eazyai-chatbot-admin', EAZYAI_CHATBOT_URL . 'assets/css/admin.css', array(), '1.0.0');
+
     if (isset($_POST['wpeazyai_save_settings'])) {
         if (!isset($_POST['wpeazyai_settings_nonce']) || !wp_verify_nonce(wp_unslash($_POST['wpeazyai_settings_nonce']), 'wpeazyai_settings')) {
             wp_die('Invalid nonce');
@@ -30,12 +38,14 @@ function wpeazyai_admin_page() {
         update_option('wpeazyai_chat_bg_color', sanitize_text_field($_POST['wpeazyai_chat_bg_color']));
         update_option('wpeazyai_title', sanitize_text_field($_POST['wpeazyai_title']));
         update_option('wpeazyai_help_text', sanitize_text_field($_POST['wpeazyai_help_text']));
-        update_option('wpeazyai_chat_icon', sanitize_text_field($_POST['wpeazyai_chat_icon']));
+        update_option('wpeazyai_chat_icon', isset($_POST['wpeazyai_chat_icon']) ? sanitize_text_field($_POST['wpeazyai_chat_icon']) : 'fa-regular fa-message');
         update_option('wpeazyai_prebuilt_1', sanitize_text_field($_POST['wpeazyai_prebuilt_1']));
         update_option('wpeazyai_prebuilt_2', sanitize_text_field($_POST['wpeazyai_prebuilt_2']));
         update_option('wpeazyai_prebuilt_3', sanitize_text_field($_POST['wpeazyai_prebuilt_3']));
         update_option('wpeazyai_welcome_message', sanitize_text_field($_POST['wpeazyai_welcome_message']));
         update_option('wpeazyai_button_text', sanitize_text_field($_POST['wpeazyai_button_text']));
+        update_option('wpeazyai_model', sanitize_text_field($_POST['wpeazyai_model']));
+        update_option('wpeazyai_embedding_model', sanitize_text_field($_POST['wpeazyai_embedding_model']));
 
     }
 
@@ -88,8 +98,45 @@ function wpeazyai_admin_page() {
                                 </p>
                             </td>
                         </tr>
-
                         <tr>
+                            <th scope="row"><label for="wpeazyai_model"><?php esc_html_e('OpenAI Model:', 'wp-eazyai-chatbot'); ?></label></th>
+                            <td>
+                                <select name="wpeazyai_model" id="wpeazyai_model">
+                                    <option value="gpt-3.5-turbo" <?php selected(get_option('wpeazyai_model', 'gpt-3.5-turbo'), 'gpt-3.5-turbo'); ?>>
+                                        <?php esc_html_e('GPT-3.5 Turbo', 'wp-eazyai-chatbot'); ?>
+                                    </option>
+                                    <option value="gpt-4" <?php selected(get_option('wpeazyai_model', 'gpt-3.5-turbo'), 'gpt-4'); ?>>
+                                        <?php esc_html_e('GPT-4', 'wp-eazyai-chatbot'); ?>
+                                    </option>
+                                    <option value="gpt-4-turbo" <?php selected(get_option('wpeazyai_model', 'gpt-3.5-turbo'), 'gpt-4-turbo'); ?>>
+                                        <?php esc_html_e('GPT-4 Turbo', 'wp-eazyai-chatbot'); ?>
+                                    </option>
+                                </select>
+                                <p class="description">
+                                    <?php esc_html_e('Select the OpenAI model to use for generating responses.', 'wp-eazyai-chatbot'); ?>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <tr>
+                                <th scope="row"><label for="wpeazyai_embedding_model"><?php esc_html_e('OpenAI Embedding Model:', 'wp-eazyai-chatbot'); ?></label></th>
+                                <td>
+                                    <select name="wpeazyai_embedding_model" id="wpeazyai_embedding_model">
+                                        <option value="text-embedding-ada-002" <?php selected(get_option('wpeazyai_embedding_model', 'text-embedding-ada-002'), 'text-embedding-ada-002'); ?>>
+                                            <?php esc_html_e('Ada v2', 'wp-eazyai-chatbot'); ?>
+                                        </option>
+                                        <option value="text-embedding-3-small" <?php selected(get_option('wpeazyai_embedding_model', 'text-embedding-ada-002'), 'text-embedding-3-small'); ?>>
+                                            <?php esc_html_e('3 Small', 'wp-eazyai-chatbot'); ?>
+                                        </option>
+                                        <option value="text-embedding-3-large" <?php selected(get_option('wpeazyai_embedding_model', 'text-embedding-ada-002'), 'text-embedding-3-large'); ?>>
+                                            <?php esc_html_e('3 Large', 'wp-eazyai-chatbot'); ?>
+                                        </option>
+                                    </select>
+                                    <p class="description">
+                                        <?php esc_html_e('Select the OpenAI model to use for generating embeddings.', 'wp-eazyai-chatbot'); ?>
+                                    </p>
+                                </td>
+                            </tr>
                             <th scope="row"><?php esc_html_e('Select Post Types for Knowledge Base:', 'wp-eazyai-chatbot'); ?></th>
                             <td>
                                 <?php 
@@ -129,6 +176,9 @@ function wpeazyai_admin_page() {
                                 <div id="progress_bar" style="display:none; margin-top: 20px;">
                                     <div class="progress-label"><?php esc_html_e('Processing posts...', 'wp-eazyai-chatbot'); ?> <span id="progress_status">0%</span></div>
                                     <progress id="progress" value="0" max="100" style="width: 100%;"></progress>
+                                </div>
+                                <div class="time-estimate" style="display:none; margin-top: 20px;">
+                                    <p><?php esc_html_e('Estimated time to process:', 'wp-eazyai-chatbot'); ?> <span id="time_estimate"></span></p>
                                 </div>
                                 <div id="process_log" style="margin-top: 20px;"></div>
                             </div>
@@ -214,23 +264,7 @@ function wpeazyai_admin_page() {
                         </tr>
                     </table>
 
-                    <style type="text/css">
-                        .wpeazyai-icon-select {
-                            display: flex;
-                            flex-wrap: wrap;
-                            gap: 15px;
-                            margin: 5px 0;
-                        }
-                        .wpeazyai-icon-select label {
-                            cursor: pointer;
-                            display: inline-flex;
-                            align-items: center;
-                            gap: 5px;
-                        }
-                        .wpeazyai-icon-select input[type="radio"] {
-                            margin-right: 5px;
-                        }
-                    </style>
+                    
 
                     <p class="submit">
                         <input type="submit" name="wpeazyai_save_settings" class="button button-primary" value="<?php echo esc_attr__('Save Settings', 'wp-eazyai-chatbot'); ?>">
@@ -302,6 +336,7 @@ function wpeazyai_admin_page() {
                     $taxonomies = get_object_taxonomies($name, 'objects');
                     // Remove post_tag from taxonomies array
                     unset($taxonomies['post_tag']);
+                    unset($taxonomies['post_format']);
                     if (!empty($taxonomies)): ?>
                     <div class="option-group taxonomy-options">
                     <h4><?php esc_html_e('Additional Taxonomy Options', 'wp-eazyai-chatbot'); ?></h4>
@@ -361,50 +396,6 @@ function wpeazyai_admin_page() {
             <div id="global_process_log" style="margin-top: 20px;"></div>
             </div>
 
-            <style>
-            .post-type-accordion {
-            border: 1px solid #ccc;
-            margin: 20px 0;
-            }
-            .accordion-item {
-            border-bottom: 1px solid #ccc;
-            }
-            .accordion-item:last-child {
-            border-bottom: none;
-            }
-            .accordion-header {
-            padding: 10px 15px;
-            background: #f5f5f5;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            }
-            .accordion-header:hover {
-            background: #f0f0f0;
-            }
-            .accordion-content {
-            padding: 15px;
-            background: #fff;
-            }
-            .toggle-icon {
-            margin-left: auto;
-            transition: transform 0.3s;
-            }
-            .option-group {
-            margin-bottom: 20px;
-            }
-            .option-group h4 {
-            margin: 0 0 10px 0;
-            }
-            .sub-option {
-            margin-left: 25px;
-            margin-top: 10px;
-            }
-            .sub-option label {
-            display: block;
-            margin-bottom: 5px;
-            }
-            </style>
 
             <script>
             jQuery(document).ready(function($) {
@@ -431,6 +422,23 @@ function wpeazyai_admin_page() {
                 $content.find(`.taxonomy-settings[data-taxonomy="${firstTaxonomy}"]`).show();
                 }
             });
+            // Show options when accordion header is clicked
+            $('.accordion-header').click(function() {
+                const $content = $(this).next('.accordion-content');
+                $('.accordion-content').not($content).slideUp();
+                $content.slideDown();
+                
+                // Show first taxonomy settings by default for this section
+                const $taxonomySelector = $content.find('.taxonomy-selector');
+                if ($taxonomySelector.length) {
+                    const firstTaxonomy = $taxonomySelector.val();
+                    $content.find('.taxonomy-settings').hide();
+                    $content.find(`.taxonomy-settings[data-taxonomy="${firstTaxonomy}"]`).show();
+                }
+                
+                // Check the radio button when header is clicked
+                $(this).find('input[type="radio"]').prop('checked', true);
+            });
 
             // Handle taxonomy selector change
             $('.taxonomy-selector').change(function() {
@@ -455,13 +463,20 @@ function wpeazyai_admin_page() {
                 }
                 else {
                 // Get all resolved topics
+                // Get current page and items per page from screen options
+                $page = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+                $per_page = get_user_option('topics_per_page');
+                if (!$per_page) $per_page = 20; // Default value
+
                 $args = array(
                     'post_type' => 'topic',
                     'post_status' => 'closed',
-                    'posts_per_page' => -1
+                    'posts_per_page' => $per_page,
+                    'paged' => $page
                 );
 
-                $topics = get_posts($args);
+                $topics_query = new WP_Query($args);
+                $topics = $topics_query->posts;
 
                 // Get available post types
                 $post_types = get_post_types(['public' => true], 'objects');
@@ -469,7 +484,7 @@ function wpeazyai_admin_page() {
                 unset($post_types['reply']);
                 unset($post_types['forum']);
                 ?>
-
+                
                 <table class="wp-list-table widefat fixed striped">
                     <thead>
                         <tr>
@@ -515,13 +530,123 @@ function wpeazyai_admin_page() {
                     </tbody>
                 </table>
 
-                <div style="margin-top: 20px;">
-                    <select id="target-post-type" class="regular-text">
-                        <?php foreach ($post_types as $type => $obj): ?>
-                        <option value="<?php echo esc_attr($type); ?>"><?php echo esc_html($obj->labels->singular_name); ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                <?php
+                // Add pagination
+                echo '<div class="tablenav bottom">';
+                echo '<div class="tablenav-pages">';
+                $big = 999999999;
+                echo paginate_links(array(
+                    'base' => str_replace($big, '%#%', esc_url(get_pagenum_link($big))),
+                    'format' => '?paged=%#%',
+                    'current' => $page,
+                    'total' => $topics_query->max_num_pages,
+                    'prev_text' => '&laquo;',
+                    'next_text' => '&raquo;'
+                ));
+                echo '</div>';
+                echo '</div>';
+                ?>
+                <p><?php esc_html_e('Select a post type to generate content. Options will appear based on post type support.', 'wp-eazyai-chatbot'); ?></p>
 
+                        <div class="post-type-accordion">
+                            <?php foreach ($supporting_types as $name => $post_type): 
+                                if ($name === 'topic') {
+                                    continue;
+                                }
+                                ?>
+                                <div class="accordion-item" data-post-type="<?php echo esc_attr($name); ?>">
+                                <div class="accordion-header">
+                                    <input type="radio" name="bbpress_global_post_type" id="bbpress_pt_<?php echo esc_attr($name); ?>" value="<?php echo esc_attr($name); ?>">
+                                    <label for="bbpress_pt_<?php echo esc_attr($name); ?>"><?php echo esc_html($post_type->label); ?></label>
+                                </div>
+                                
+                                <div class="accordion-content" style="display:none">
+                                    <?php if (post_type_supports($name, 'excerpt')): ?>
+                                    <div class="option-group">
+                                    <h4><?php esc_html_e('Excerpt Options', 'wp-eazyai-chatbot'); ?></h4>
+                                    <label>
+                                        <input type="checkbox" name="bbpress_generate_excerpt" checked>
+                                        <?php esc_html_e('Generate Excerpts', 'wp-eazyai-chatbot'); ?>
+                                    </label>
+                                    <div class="sub-option">
+                                        <label>
+                                        <?php esc_html_e('Excerpt length (words):', 'wp-eazyai-chatbot'); ?>
+                                        <input type="number" name="bbpress_excerpt_length" value="50" min="10" max="200">
+                                        </label>
+                                    </div>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <?php if (post_type_supports($name, 'post_tags') || is_object_in_taxonomy($name, 'post_tag')): ?>
+                                    <div class="option-group">
+                                    <h4><?php esc_html_e('Tags Options', 'wp-eazyai-chatbot'); ?></h4>
+                                    <label>
+                                        <input type="checkbox" name="bbpress_generate_post_tag" checked>
+                                        <?php esc_html_e('Generate Tags', 'wp-eazyai-chatbot'); ?>
+                                    </label>
+                                    <div class="sub-option">
+                                        <label>
+                                        <?php esc_html_e('Number of tags:', 'wp-eazyai-chatbot'); ?>
+                                        <input type="number" name="bbpress_number_of_post_tag" value="5" min="1" max="10">
+                                        </label>
+                                    </div>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <?php 
+                                    $taxonomies = get_object_taxonomies($name, 'objects');
+                                    // Remove post_tag from taxonomies array
+                                    unset($taxonomies['post_tag']);
+                                    unset($taxonomies['post_format']);
+                                    if (!empty($taxonomies)): ?>
+                                    <div class="option-group taxonomy-options">
+                                    <h4><?php esc_html_e('Additional Taxonomy Options', 'wp-eazyai-chatbot'); ?></h4>
+                                    <label>
+                                        <?php esc_html_e('Select Taxonomy:', 'wp-eazyai-chatbot'); ?>
+                                        <select name="bbpress_selected_taxonomy" class="taxonomy-selector">
+                                        <?php foreach ($taxonomies as $tax_name => $taxonomy): ?>
+                                        <option value="<?php echo esc_attr($tax_name); ?>">
+                                            <?php echo esc_html($taxonomy->labels->singular_name); ?>
+                                        </option>
+                                        <?php endforeach; ?>
+                                        </select>
+                                    </label>
+
+                                    <?php foreach ($taxonomies as $tax_name => $taxonomy): ?>
+                                    <div class="taxonomy-settings" data-taxonomy="<?php echo esc_attr($tax_name); ?>" style="display: none;">
+                                        <label>
+                                        <input type="checkbox" name="bbpress_generate_<?php echo esc_attr($tax_name); ?>" checked>
+                                        <?php /* translators: %s is the taxonomy label (plural form) */
+                                        printf(esc_html__('Generate %s', 'wp-eazyai-chatbot'), esc_html($taxonomy->labels->name)); ?>
+                                        </label>
+                                        <div class="sub-option">
+                                        <label>
+                                            <?php 
+                                            /* Translators: %s is the taxonomy label (singular form) */
+                                            printf(esc_html__('Number of %s:', 'wp-eazyai-chatbot'), esc_html($taxonomy->labels->name)); ?>
+                                            <input type="number" name="bbpress_number_of_<?php echo esc_attr($tax_name); ?>" 
+                                            value="5" min="1" max="10">
+                                        </label>
+                                        <label>
+                                            <?php esc_html_e('Generate for posts with:', 'wp-eazyai-chatbot'); ?>
+                                            <select name="bbpress_<?php echo esc_attr($tax_name); ?>_threshold">
+                                            <option value="0"><?php esc_html_e('0 Terms', 'wp-eazyai-chatbot'); ?></option>
+                                            <option value="1"><?php esc_html_e('1 Term or less', 'wp-eazyai-chatbot'); ?></option>
+                                            <option value="2"><?php esc_html_e('2 Terms or less', 'wp-eazyai-chatbot'); ?></option>
+                                            <option value="3"><?php esc_html_e('3 Terms or less', 'wp-eazyai-chatbot'); ?></option>
+                                            </select>
+                                        </label>
+                                        </div>
+                                    </div>
+                                    <?php endforeach; ?>
+                                    </div>
+                                    <?php endif; ?>
+                                </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+
+                <div style="margin-top: 20px;">
                     <button id="convert-topics" class="button button-primary">
                         <?php esc_html_e('Convert Selected Topics', 'wp-eazyai-chatbot'); ?>
                     </button>
@@ -552,8 +677,27 @@ function wpeazyai_admin_page() {
                         if (!confirm(wp.i18n.__('Are you sure you want to convert ' + selectedTopics.length + ' selected topics?', 'wp-eazyai-chatbot'))) {
                             return;
                         }
+                        // Get selected options for BBPress convert
+                        var $content = $('input[name="bbpress_global_post_type"]:checked').closest('.accordion-header').next('.accordion-content');
 
-                        var postType = $('#target-post-type').val();
+                        // Build options object
+                        var options = {
+                            generate_excerpt: $content.find('input[name="bbpress_generate_excerpt"]').is(':checked'),
+                            excerpt_length: $content.find('input[name="bbpress_excerpt_length"]').val(),
+                            generate_post_tag: $content.find('input[name="bbpress_generate_post_tag"]').is(':checked'), 
+                            number_of_post_tag: $content.find('input[name="bbpress_number_of_post_tag"]').val()
+                        };
+
+                        // Add taxonomy options
+                        var selectedTaxonomy = $content.find('.taxonomy-selector').val();
+                        if (selectedTaxonomy) {
+                            options.taxonomy = selectedTaxonomy;
+                            options[`generate_${selectedTaxonomy}`] = $content.find(`input[name="bbpress_generate_${selectedTaxonomy}"]`).is(':checked');
+                            options[`number_of_${selectedTaxonomy}`] = $content.find(`input[name="bbpress_number_of_${selectedTaxonomy}"]`).val();
+                            options[`${selectedTaxonomy}_threshold`] = $content.find(`select[name="bbpress_${selectedTaxonomy}_threshold"]`).val();
+                        }
+                        
+                        var postType = $('input[name="bbpress_global_post_type"]:checked').val();
                         var button = $(this);
                         button.prop('disabled', true);
                         $('#conversion-progress').show();
@@ -577,6 +721,7 @@ function wpeazyai_admin_page() {
                         var maxConcurrent = 3;
                         var running = 0;
                         var index = 0;
+                        
 
                         function processNext() {
                             if (index >= selectedTopics.length) {
@@ -603,7 +748,9 @@ function wpeazyai_admin_page() {
                                     successCount++;
                                     $('#conversion-log').prepend('<div>' + 
                                         wp.i18n.__('Converted:', 'wp-eazyai-chatbot') + ' ' + 
-                                        (response.data.title) + '</div>');
+                                        '<a href="' + response.data.post_edit_link + '">' + 
+                                        response.data.title + '</a></div>');
+                                        processGlobalBatch(0, [response.data.post_id], options);
                                 } else {
                                     failCount++;
                                     $('#conversion-log').prepend('<div class="error">' + 
@@ -643,9 +790,6 @@ function wpeazyai_admin_page() {
         <!-- bbpress tab -->
     </div>
 
-    <style>
-    .tab-content { padding: 15px 0; }
-    </style>
 
     <script>
     jQuery(document).ready(function($) {
@@ -663,9 +807,13 @@ function wpeazyai_admin_page() {
 
     <script>
     jQuery(document).ready(function($) {
+        let startTime;
+        let totalProcessed = 0;
+        let averageTimePerItem = 0;
         $('#process_posts').click(function() {
             if (!confirm(wp.i18n.__('This will clear existing embeddings. Continue?', 'wp-eazyai-chatbot'))) return;
-            
+            startTime = new Date();
+            totalProcessed = 0;
             var button = $(this);
             button.prop('disabled', true);
             $('#progress_bar').show();
@@ -689,25 +837,56 @@ function wpeazyai_admin_page() {
                 nonce: '<?php echo esc_js(wp_create_nonce("wpeazyai_process")); ?>'
             }, function(response) {
                 if (response.success) {
+                    totalProcessed = offset + response.data.processed;
                     var progress = Math.round((offset + response.data.processed) / total * 100);
                     jQuery('#progress').val(progress);
                     jQuery('#progress_status').text(progress + '%');
-                    jQuery('#process_log').prepend('<div>' + wp.escapeHtml(response.data.message) + '</div>');
+                     // Update time estimates
+                    updateTimeEstimates(totalProcessed, total);
+                    //jQuery('#process_log').prepend('<div>' + wp.escapeHtml(response.data.message) + '</div>');
+                    // Create or update the results table
+                    if (!$('#results-table').length) {
+                        $('#process_log').after(`
+                            <table id="results-table" class="widefat fixed striped" style="margin-top: 20px;padding: 10px;">
+                                <thead>
+                                    <tr>
+                                        <th>Post ID</th>
+                                        <th>Post Title</th>
+                                        <th>URL</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        `);
+                    }
+
+                    // Add row to the results table
+                    // Add row to the results table
+                    $('#results-table tbody').prepend(`
+                        <tr>
+                            <td>${response.data.post_id}</td>
+                            <td>${response.data.post_title}</td> 
+                            <td><a href="${response.data.post_link}" target="_blank">View Post</a></td>
+                            <td style="color: green">Success</td>
+                        </tr>
+                    `);
 
                     if (offset + response.data.processed < total) {
                         processPostsBatch(offset + response.data.processed, total);
                     } else {
+                        const totalTime = ((new Date() - startTime) / 1000).toFixed(1);
                         jQuery('#process_posts').prop('disabled', false);
-                        jQuery('#process_log').prepend('<div><strong>' + wp.i18n.__('Processing complete!', 'wp-eazyai-chatbot') + '</strong></div>');
+                        jQuery('#process_log').prepend('<div><strong>' + wp.i18n.__(`Processing complete! Total time: ${totalTime}s`, 'wp-eazyai-chatbot') + '</strong></div>');
                     }
                 } else {
-                    jQuery('#process_log').prepend('<div class="error" style="color:red">' + wp.escapeHtml(response.data.message) + '</div>');
+                    jQuery('#process_log').prepend('<div class="error" style="color:red">' + response.data.message + '</div>');
                     jQuery('#process_posts').prop('disabled', false);
                     
                     // Show error details if available
                     if (response.data.error) {
                         jQuery('#process_log').prepend('<div class="error-details" style="color:#666; font-size:0.9em">' + 
-                            wp.escapeHtml(response.data.error) + '</div>');
+                            response.data.error + '</div>');
                     }
                     
                     // Update progress to reflect failure
@@ -723,7 +902,38 @@ function wpeazyai_admin_page() {
                 $('#progress_status').text('Error');
             });
         }
+        function updateTimeEstimates(processed, total) {
+            const currentTime = new Date();
+            const elapsedTime = (currentTime - startTime) / 1000; // in seconds
+            
+            if (processed > 0) {
+                averageTimePerItem = elapsedTime / processed;
+                const remainingItems = total - processed;
+                const estimatedRemainingTime = remainingItems * averageTimePerItem;
+                
+                // Format times
+                const formatTime = (seconds) => {
+                    const minutes = Math.floor(seconds / 60);
+                    const remainingSeconds = Math.floor(seconds % 60);
+                    return `${minutes}m ${remainingSeconds}s`;
+                };
 
+                const timeStats = `
+                    <div class="time-estimates">
+                        <p>Elapsed: ${formatTime(elapsedTime)}</p>
+                        <p>Estimated Remaining: ${formatTime(estimatedRemainingTime)}</p>
+                        <p>Average Time Per Item: ${averageTimePerItem.toFixed(1)}s</p>
+                    </div>
+                `;
+
+                // Update or create time estimates display
+                if ($('.time-estimates').length) {
+                    $('.time-estimates').replaceWith(timeStats);
+                } else {
+                    $('#process_log').before(timeStats);
+                }
+            }
+        }
         $('#generate_global_tags').click(function() {
             var postType = $('input[name="global_post_type"]:checked').val();
             
@@ -777,14 +987,32 @@ function wpeazyai_admin_page() {
                 }
             });
 
-            function processGlobalBatch(index, posts, options) {
-                if (index >= posts.length) {
+            
+        });
+
+        
+    }); // ready
+
+    function processGlobalBatch(index, posts, options) {
+        $ = jQuery;
+                var tab = localStorage.getItem('wpeazyai_active_tab');
+                if (index >= posts.length && tab == 'global') {
                     jQuery('#generate_global_tags').prop('disabled', false);
                     jQuery('#global_process_log').prepend('<div><strong>' + wp.i18n.__('Processing complete!', 'wp-eazyai-chatbot') + '</strong></div>');
                     if(posts.length == 0) {
                         $('#global_progress_status').text('100%');
                         $('#global_progress').val(100);
                         jQuery('#global_process_log').prepend('<div><strong>' + wp.i18n.__('No posts found to process.', 'wp-eazyai-chatbot') + '</strong></div>');
+                    }
+                    return;
+                }
+                if(index >= posts.length && tab == 'bbpress') {
+                    jQuery('#convert-topics').prop('disabled', false);
+                    jQuery('#conversion-log').prepend('<div><strong>' + wp.i18n.__('Processing complete!', 'wp-eazyai-chatbot') + '</strong></div>');
+                    if(posts.length == 0) {
+                        $('#conversion-status').text('100%');
+                        $('#conversion-bar').val(100);
+                        jQuery('#conversion-log').prepend('<div><strong>' + wp.i18n.__('No topics found to convert.', 'wp-eazyai-chatbot') + '</strong></div>');
                     }
                     return;
                 }
@@ -858,9 +1086,17 @@ function wpeazyai_admin_page() {
                         nonce: '<?php echo esc_js(wp_create_nonce("wpeazyai_process")); ?>'
                     }).done(function(setTermsResponse) {
                         if (setTermsResponse.success) {
-                            $('#global_process_log').prepend('<div>Updated post ' + posts[index] + '</div>');
+                            if(tab == 'global') {
+                                $('#global_process_log').prepend('<div>Updated post ' + posts[index] + '</div>');
+                            } else {
+                                $('#conversion-log').prepend('<div>Updated post ' + posts[index] + '</div>');
+                            }
                         } else {
-                            $('#global_process_log').prepend('<div class="error">Error updating post ' + posts[index] + '</div>');
+                            if(tab == 'global') {
+                                $('#global_process_log').prepend('<div class="error">Error updating post ' + posts[index] + '</div>');
+                            } else {
+                                $('#conversion-log').prepend('<div class="error">Error updating post ' + posts[index] + '</div>');
+                            }
                         }
                         processGlobalBatch(index + 1, posts, options);
                     });
@@ -869,8 +1105,6 @@ function wpeazyai_admin_page() {
                     processGlobalBatch(index + 1, posts, options);
                 });
             }
-        });
-    });
     </script>
     <?php
 }

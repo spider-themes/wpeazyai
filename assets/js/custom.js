@@ -14,7 +14,23 @@ jQuery(document).ready(function () {
         `);
         $('#eazybotinput').val('');
     });
-
+    // Handle Enter key press
+    $('#eazybotinput').keypress(function(e) {
+        if (e.which == 13) {
+            $('#eazybotsend').click();
+            return false;
+        }
+    });
+    // Add beforeunload event listener
+    window.addEventListener('beforeunload', function (e) {
+        if (window.chatSessionActive) {
+            e.preventDefault();
+            // Use WordPress translation function if available, fallback to default message
+            e.returnValue = (typeof wp !== 'undefined' && wp.i18n) 
+                ? wp.i18n.__('You have an active chat session. Are you sure you want to leave?', 'wp-eazyai-chatbot')
+                : 'You have an active chat session. Are you sure you want to leave?';
+        }
+    });
     // EazyAI Chatbot Message Sending
     jQuery(document).on('click', '#eazybotsend', function () {
         const message = $('#eazybotinput').val();
@@ -44,7 +60,10 @@ jQuery(document).ready(function () {
                     </div>
                 </div>
             `);
+                // Set a flag when chat session is active
+                window.chatSessionActive = true;
 
+                
             $.ajax({
                 url: eazyai_chatbot_vars.ajaxurl,
                 type: 'POST',

@@ -1,0 +1,128 @@
+/* Pagination styling for admin table */
+.tablenav-pages {
+    float: right;
+    margin: 1em 0;
+}
+
+.tablenav-pages a,
+.tablenav-pages span {
+    display: inline-block;
+    padding: 4px 10px;
+    margin: 0 3px;
+    border: 1px solid #ddd;
+    background: #f7f7f7;
+    color: #555;
+    text-decoration: none;
+    border-radius: 3px;
+}
+
+.tablenav-pages a:hover {
+    background: #e8e8e8;
+    border-color: #ccc;
+    color: #23282d;
+}
+
+.tablenav-pages .current {
+    background: #0073aa;
+    border-color: #006799;
+    color: #fff;
+    font-weight: 600;
+}
+
+.tablenav-pages .tablenav-pages-navspan {
+    color: #bbb;
+    background: #f7f7f7;
+    border-color: #ddd;
+}
+
+/* Table navigation bottom margin */
+.tablenav.bottom {
+    margin-top: 20px;
+}
+
+/* Responsive pagination */
+@media screen and (max-width: 782px) {
+    .tablenav-pages {
+        float: none;
+        text-align: center;
+    }
+    
+    .tablenav-pages a,
+    .tablenav-pages span {
+        padding: 6px 14px;
+        font-size: 14px;
+    }
+}
+
+.tab-content { padding: 15px 0; }
+.time-estimates {
+    margin: 15px 0;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.time-estimates p {
+    margin: 5px 0;
+    font-size: 13px;
+    color: #666;
+}
+
+.wpeazyai-icon-select {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 5px 0;
+}
+.wpeazyai-icon-select label {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.wpeazyai-icon-select input[type="radio"] {
+    margin-right: 5px;
+}
+
+.post-type-accordion {
+    border: 1px solid #ccc;
+    margin: 20px 0;
+    }
+    .accordion-item {
+    border-bottom: 1px solid #ccc;
+    }
+    .accordion-item:last-child {
+    border-bottom: none;
+    }
+    .accordion-header {
+    padding: 10px 15px;
+    background: #f5f5f5;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    }
+    .accordion-header:hover {
+    background: #f0f0f0;
+    }
+    .accordion-content {
+    padding: 15px;
+    background: #fff;
+    }
+    .toggle-icon {
+    margin-left: auto;
+    transition: transform 0.3s;
+    }
+    .option-group {
+    margin-bottom: 20px;
+    }
+    .option-group h4 {
+    margin: 0 0 10px 0;
+    }
+    .sub-option {
+    margin-left: 25px;
+    margin-top: 10px;
+    }
+    .sub-option label {
+    display: block;
+    margin-bottom: 5px;
+    }

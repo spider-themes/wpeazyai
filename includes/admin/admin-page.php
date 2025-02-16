@@ -19,14 +19,17 @@ if (!defined('ABSPATH')) {
  */
 add_action('admin_menu', 'wpeazyai_admin_menu');
 function wpeazyai_admin_menu() {
-    add_menu_page(
-        'EazyAI Chatbot',
-        'EazyAI Chatbot',
+    $hook = add_menu_page(
+        __('EazyAI Chatbot', 'wp-eazyai-chatbot'),
+        __('EazyAI Chatbot', 'wp-eazyai-chatbot'),
         'manage_options',
         'wp-eazyai-chatbot',
         'wpeazyai_admin_page',
-        'dashicons-format-chat',
+        'dashicons-format-chat'
     );
+
+    // Load screen options when this page loads
+    add_action("load-$hook", 'wpeazyai_add_screen_options');
 }
 
 // add admin scripts
@@ -51,4 +54,20 @@ function wpeazyai_admin_scripts($hook) {
     
 }
 add_action('admin_enqueue_scripts', 'wpeazyai_admin_scripts');
-
+function wpeazyai_add_screen_options() {
+    $option = 'per_page';
+    $args = array(
+        'label' => __('Topics per page', 'wp-eazyai-chatbot'),
+        'default' => 20,
+        'option' => 'topics_per_page'
+    );
+    add_screen_option($option, $args);
+}
+// Add this function to save the screen options
+function wpeazyai_set_screen_option($status, $option, $value) {
+    if ('topics_per_page' === $option) {
+        return $value;
+    }
+    return $status;
+}
+add_filter('set-screen-option', 'wpeazyai_set_screen_option', 10, 3);

@@ -18,28 +18,75 @@ function wpeazyai_convert_topic_ajax_handler() {
     
     $topic_id = isset($_POST['topic_id']) ? intval($_POST['topic_id']) : 0;
     $post_type = isset($_POST['post_type']) ? sanitize_text_field(wp_unslash($_POST['post_type'])) : '';
-    
+    $tone = isset($_POST['tone']) ? sanitize_text_field(wp_unslash($_POST['tone'])) : 'neutral';
+    $excerpt_length = isset($_POST['excerpt_length']) ? intval($_POST['excerpt_length']) : 150;
+    $taxonomy_limit = isset($_POST['taxonomy_limit']) ? intval($_POST['taxonomy_limit']) : 5;
+
     if ($topic_id <= 0 || empty($post_type)) {
         wp_send_json_error(['message' => 'Invalid request.']);
     }
-    
+
     $topic = get_post($topic_id);
     if (!$topic) {
         wp_send_json_error(['message' => 'Topic not found.']);
     }
-    
+
+    // Retrieve all replies for the topic (assuming bbPress replies use "reply" as post type)
+    $replies = get_children([
+        'post_parent' => $topic_id,
+        'post_type'   => 'reply',
+        'post_status' => 'publish',
+        'orderby'     => 'date',
+        'order'       => 'ASC'
+    ]);
+
+    // Concatenate topic content and replies into one conversation string
+    $full_conversation = $topic->post_content . "\n\n";
+    if (!empty($replies)) {
+        foreach ($replies as $reply) {
+            $full_conversation .= $reply->post_content . "\n\n";
+        }
+    }
+
+    /**
+     * Call a custom AI function to generate a comprehensive post.
+     * This function should analyze the full conversation and return an associative array:
+     * [
+     *    'title'      => (string) Generated title,
+     *    'content'    => (string) Generated content,
+     *    'excerpt'    => (string) Generated excerpt,
+     *    'taxonomies' => (array)  Taxonomies e.g. ['category' => [...], 'post_tag' => [...]]
+     * ]
+     * Users can control the tone, excerpt length, and taxonomy limit via POST vars.
+     */
+    $generated_post = wpeazyai_generate_post($topic->post_title, $full_conversation, $tone, $excerpt_length, $taxonomy_limit);
+    if (
+        !isset($generated_post['title'], $generated_post['content'], $generated_post['excerpt'])
+        || empty($generated_post['title']) || empty($generated_post['content'])
+    ) {
+        wp_send_json_error(['message' => 'Failed to generate post.']);
+    }
+
     $post_id = wp_insert_post([
-        'post_title'   => $topic->post_title,
-        'post_content' => $topic->post_content,
+        'post_title'   => $generated_post['title'],
+        'post_content' => $generated_post['content'],
+        'post_excerpt' => $generated_post['excerpt'],
         'post_status'  => 'publish',
         'post_type'    => $post_type,
     ]);
-    
+
     if (is_wp_error($post_id)) {
         wp_send_json_error(['message' => $post_id->get_error_message()]);
     }
-    
-    wp_send_json_success(['title' => $topic->post_title]);
+
+    // Set taxonomies if provided in the generated post output.
+    if (isset($generated_post['taxonomies']) && is_array($generated_post['taxonomies'])) {
+        foreach ($generated_post['taxonomies'] as $taxonomy => $terms) {
+            wp_set_post_terms($post_id, $terms, $taxonomy, false);
+        }
+    }
+
+    wp_send_json_success(['title' => $generated_post['title'], 'post_edit_link' => get_edit_post_link($post_id), 'post_id' => $post_id]);
 }
 
 add_action('wp_ajax_wpeazyai_set_terms', 'wpeazyai_set_terms_ajax_handler');
@@ -145,7 +192,7 @@ function wpeazyai_process_posts_batch() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'wpeazyai_embeddings';
     $offset = isset($_POST['offset']) ? intval($_POST['offset']) : 0;
-    $batch_size = 5; // Process 5 posts per batch
+    $batch_size = 1; // Process 5 posts per batch
     
     $api_key = get_option('wpeazyai_api_key');
     $post_types = get_option('wpeazyai_selected_post_types', []);
@@ -190,6 +237,9 @@ function wpeazyai_process_posts_batch() {
     
     wp_send_json_success([
         'processed' => $processed,
-        'message' => sprintf('Processed %d posts (offset: %d)', $processed, $offset)
+        'post_link' => get_permalink($post->ID),
+        'post_title' => $post->post_title,
+        'post_id' => $post->ID,
+        'message' => sprintf('Processed %d', $processed)
     ]);
 }

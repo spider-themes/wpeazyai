@@ -36,7 +36,7 @@ function wpeazyai_chatbot_ajax_handler() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'wpeazyai_embeddings';
     $results = $wpdb->get_results("SELECT id, post_id, chunk_index, chunk_text, embedding FROM $table_name");
-
+    $model = get_option('wpeazyai_model', 'gpt-3.5-turbo');
     // 5c. Compute cosine similarity (naive approach)
     $similarities = [];
     foreach ($results as $row) {
@@ -83,7 +83,7 @@ function wpeazyai_chatbot_ajax_handler() {
     // 5e. Call OpenAI's Chat Completion API
     $chat_endpoint = 'https://api.openai.com/v1/chat/completions';
     $chat_body = [
-        'model'       => 'gpt-3.5-turbo',
+        'model'       => $model,
         'messages'    => [
             ['role' => 'system', 'content' => $system_message],
             ['role' => 'user', 'content' => $user_message]

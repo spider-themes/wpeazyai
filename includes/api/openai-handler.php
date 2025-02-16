@@ -18,10 +18,10 @@ if (!defined('ABSPATH')) {
 function wpeazyai_generate_embedding($text, $api_key) {
     // Trim and clean up text
     $text = trim($text);
-
+    $embed_model = get_option('wpeazyai_embedding_model', 'text-embedding-ada-002');
     $endpoint = 'https://api.openai.com/v1/embeddings';
     $body = [
-        'model' => 'text-embedding-ada-002', // popular embeddings model
+        'model' => $embed_model, // popular embeddings model
         'input' => $text,
     ];
 
@@ -91,10 +91,10 @@ function wpeazyai_get_excerpt_ajax_handler() {
     if (empty($api_key)) {
         wp_send_json_error(['message' => 'API key not found.']);
     }
-
+    $model = get_option('wpeazyai_model', 'gpt-3.5-turbo');
     $chat_endpoint = 'https://api.openai.com/v1/chat/completions';
     $chat_body = [
-        'model' => 'gpt-3.5-turbo',
+        'model' => $model,
         'messages' => [
             [
                 'role' => 'system',
@@ -146,7 +146,7 @@ function wpeazyai_get_taxonomy_terms_ajax_handler() {
     $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
     $taxonomy = isset($_POST['taxonomy']) ? sanitize_key($_POST['taxonomy']) : '';
     $number_of_terms = isset($_POST['number_of_terms']) ? intval($_POST['number_of_terms']) : 5;
-
+    $model = get_option('wpeazyai_model', 'gpt-3.5-turbo');
     if ($post_id <= 0 || empty($taxonomy)) {
         wp_send_json_error(['message' => 'Invalid request parameters.']);
     }
@@ -163,7 +163,7 @@ function wpeazyai_get_taxonomy_terms_ajax_handler() {
 
     $chat_endpoint = 'https://api.openai.com/v1/chat/completions';
     $chat_body = [
-        'model' => 'gpt-3.5-turbo',
+        'model' => $model,
         'messages' => [
             [
                 'role' => 'system',
@@ -247,10 +247,10 @@ function wpeazyai_get_tags_ajax_handler() {
     if (empty($api_key)) {
         wp_send_json_error(['message' => 'API key not found.']);
     }
-
+    $model = get_option('wpeazyai_model', 'gpt-3.5-turbo');
     $chat_endpoint = 'https://api.openai.com/v1/chat/completions';
     $chat_body = [
-        'model' => 'gpt-3.5-turbo',
+        'model' => $model,
         'messages' => [
             [
                 'role' => 'system',
@@ -327,3 +327,78 @@ function wpeazyai_get_tags_ajax_handler() {
         'content' => $chat_data['choices'][0]['message']['content']
     ]);
 }
+/**
+     * Call a custom AI function to generate a comprehensive post.
+     * This function should analyze the full conversation and return an associative array:
+     * [
+     *    'title'      => (string) Generated title,
+     *    'content'    => (string) Generated content,
+     *    'excerpt'    => (string) Generated excerpt,
+     *    'taxonomies' => (array)  Taxonomies e.g. ['category' => [...], 'post_tag' => [...]]
+     * ]
+     * Users can control the tone, excerpt length, and taxonomy limit via POST vars.
+     */
+    function wpeazyai_generate_post($title, $conversation, $tone, $excerpt_length, $taxonomy_limit) {
+        $api_key = get_option('wpeazyai_api_key');
+        if (empty($api_key)) {
+            return null;
+        }
+
+        $model = get_option('wpeazyai_model', 'gpt-3.5-turbo');
+        $chat_endpoint = 'https://api.openai.com/v1/chat/completions';
+
+        $system_message = "You are an expert content generator. Your task is to create a comprehensive post based on a provided conversation. Use a {$tone} tone. The output must include a title, content body, a concise excerpt of roughly {$excerpt_length} words, and relevant taxonomies. For taxonomies, generate two lists: one for categories and one for post tags, each limited to {$taxonomy_limit} simple and relevant items. Respond in valid JSON format with these keys: 'title', 'content', 'excerpt', and 'taxonomies'. The 'taxonomies' value should be an object with keys 'category' and 'post_tag' containing arrays of terms.";
+        $user_message = "Topic Title: {$title}\n\nConversation:\n{$conversation}\n\nPlease generate the complete post accordingly.";
+
+        $chat_body = [
+            'model'       => $model,
+            'messages'    => [
+                [
+                    'role'    => 'system',
+                    'content' => $system_message
+                ],
+                [
+                    'role'    => 'user',
+                    'content' => $user_message
+                ]
+            ],
+            'max_tokens'  => 600,
+            'temperature' => 0.7,
+        ];
+
+        $response = wp_remote_post($chat_endpoint, [
+            'headers' => [
+                'Content-Type'  => 'application/json',
+                'Authorization' => 'Bearer ' . $api_key,
+            ],
+            'body'    => json_encode($chat_body),
+            'timeout' => 30,
+        ]);
+
+        if (is_wp_error($response)) {
+            return null;
+        }
+
+        $data = json_decode(wp_remote_retrieve_body($response), true);
+        if (!isset($data['choices'][0]['message']['content'])) {
+            return null;
+        }
+
+        $generated = trim($data['choices'][0]['message']['content']);
+        $generated_post = json_decode($generated, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE || !isset($generated_post['title'], $generated_post['content'], $generated_post['excerpt'])) {
+            // Fallback if the response is not in valid JSON format.
+            $generated_post = [
+                'title'      => $title,
+                'content'    => $conversation,
+                'excerpt'    => wp_trim_words($conversation, $excerpt_length, '...'),
+                'taxonomies' => [
+                    'category'  => [],
+                    'post_tag'  => []
+                ]
+            ];
+        }
+
+        return $generated_post;
+    }

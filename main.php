@@ -3,7 +3,7 @@
 Plugin Name: EazyAI Chatbot
 Plugin URI:  https://fiverr.com/wpfixit
 Description: Integrating OpenAI embeddings for a chatbot, renamed to EazyAI Chatbot, with additional features such as knowledge base, tags, excerpts, and BBPress integration.
-Version:     1.8.0
+Version:     2.0.0
 Author:      wpfixit
 License:     GPLv2 or later
 text-domain: 'wp-eazyai-chatbot'

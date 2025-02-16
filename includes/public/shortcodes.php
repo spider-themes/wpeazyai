@@ -66,7 +66,7 @@ function wpeazyai_chatbot_shortcode() {
 
     <button id="eazyai-help-button" class="eazybot-bg-primary position-fixed bottom-0 end-0 bg-primary text-white p-3 rounded-circle shadow-lg z-150 border-0" onclick="EazyBotToggleChat()">
         <div class="d-flex align-items-center gap-2">
-            <i class="<?php echo esc_attr(get_option('wpeazyai_chat_icon', 'fa-question')); ?>" id="help-icon"></i>
+            <i class="fas <?php echo esc_attr(get_option('wpeazyai_chat_icon', 'fa-question')); ?>" id="help-icon"></i>
             <i class="fas fa-times d-none" id="close-icon"></i>
             <span><?php echo esc_html(get_option('wpeazyai_button_text', 'Help')); ?></span>
         </div>
