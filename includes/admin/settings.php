@@ -811,7 +811,7 @@ function wpeazyai_admin_page() {
         let totalProcessed = 0;
         let averageTimePerItem = 0;
         $('#process_posts').click(function() {
-            if (!confirm(wp.i18n.__('This will clear existing embeddings. Continue?', 'wp-eazyai-chatbot'))) return;
+            if (!confirm(wp.i18n.__('Are you sure you want to add knowledgebase. Continue?', 'wp-eazyai-chatbot'))) return;
             startTime = new Date();
             totalProcessed = 0;
             var button = $(this);
@@ -994,9 +994,10 @@ function wpeazyai_admin_page() {
     }); // ready
 
     function processGlobalBatch(index, posts, options) {
+        var tab = localStorage.getItem('wpeazyai_active_tab');
         $ = jQuery;
-                var tab = localStorage.getItem('wpeazyai_active_tab');
-                if (index >= posts.length && tab == 'global') {
+        
+                if (index >= posts.length && tab == 'globaltags') {
                     jQuery('#generate_global_tags').prop('disabled', false);
                     jQuery('#global_process_log').prepend('<div><strong>' + wp.i18n.__('Processing complete!', 'wp-eazyai-chatbot') + '</strong></div>');
                     if(posts.length == 0) {
@@ -1086,13 +1087,13 @@ function wpeazyai_admin_page() {
                         nonce: '<?php echo esc_js(wp_create_nonce("wpeazyai_process")); ?>'
                     }).done(function(setTermsResponse) {
                         if (setTermsResponse.success) {
-                            if(tab == 'global') {
+                            if(tab == 'globaltags') {
                                 $('#global_process_log').prepend('<div>Updated post ' + posts[index] + '</div>');
                             } else {
                                 $('#conversion-log').prepend('<div>Updated post ' + posts[index] + '</div>');
                             }
                         } else {
-                            if(tab == 'global') {
+                            if(tab == 'globaltags') {
                                 $('#global_process_log').prepend('<div class="error">Error updating post ' + posts[index] + '</div>');
                             } else {
                                 $('#conversion-log').prepend('<div class="error">Error updating post ' + posts[index] + '</div>');
@@ -1102,7 +1103,7 @@ function wpeazyai_admin_page() {
                     });
                 }).fail(function() {
                     $('#global_process_log').prepend('<div class="error">Error processing post ' + posts[index] + '</div>');
-                    processGlobalBatch(index + 1, posts, options);
+                    //processGlobalBatch(index + 1, posts, options);
                 });
             }
     </script>

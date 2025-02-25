@@ -348,7 +348,7 @@ function wpeazyai_get_tags_ajax_handler() {
         $chat_endpoint = 'https://api.openai.com/v1/chat/completions';
 
         $system_message = "You are an expert content generator. Your task is to create a comprehensive post based on a provided conversation. Use a {$tone} tone. The output must include a title, content body, a concise excerpt of roughly {$excerpt_length} words, and relevant taxonomies. For taxonomies, generate two lists: one for categories and one for post tags, each limited to {$taxonomy_limit} simple and relevant items. Respond in valid JSON format with these keys: 'title', 'content', 'excerpt', and 'taxonomies'. The 'taxonomies' value should be an object with keys 'category' and 'post_tag' containing arrays of terms.";
-        $user_message = "Topic Title: {$title}\n\nConversation:\n{$conversation}\n\nPlease generate the complete post accordingly.";
+        $user_message = "Generate a blog post or documentation based on the following forum topic {$title}\n\n. The topic contains a discussion about an issue—rewrite it as a structured post that clearly presents the problem and its solution for other users: Topic Title: {$title}\n\nConversation:\n{$conversation}\n\nPlease generate the complete post accordingly.";
 
         $chat_body = [
             'model'       => $model,

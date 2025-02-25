@@ -196,10 +196,10 @@ function wpeazyai_process_posts_batch() {
     
     $api_key = get_option('wpeazyai_api_key');
     $post_types = get_option('wpeazyai_selected_post_types', []);
-    
-    if ($offset === 0) {
-        $wpdb->query($wpdb->prepare("TRUNCATE TABLE %i", $table_name));
-    }
+    // Remove the truncate operation
+    // if ($offset === 0) {
+    //     $wpdb->query($wpdb->prepare("TRUNCATE TABLE %i", $table_name));
+    // }
     
     $posts = get_posts([
         'post_type' => $post_types,
@@ -210,6 +210,17 @@ function wpeazyai_process_posts_batch() {
     
     $processed = 0;
     foreach ($posts as $post) {
+        // Check if post already exists in embeddings table
+        $exists = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$table_name} WHERE post_id = %d",
+            $post->ID
+        ));
+        
+        // Skip if post already has embeddings
+        if ($exists > 0) {
+            $processed++;
+            continue;
+        }
         $content = wp_strip_all_tags($post->post_content);
         $chunks = str_split($content, 800);
         
