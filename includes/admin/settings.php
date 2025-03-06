@@ -66,15 +66,108 @@ function wpeazyai_admin_page() {
         
         <h2 class="nav-tab-wrapper">
             <a href="#config" class="nav-tab wpeazyai-nav-tab" data-tab="config"><?php echo esc_html__('Configuration', 'wp-eazyai-chatbot'); ?></a>
-            <a href="#globaltags" class="nav-tab wpeazyai-nav-tab" data-tab="globaltags"><?php echo esc_html__('Generate Tags and Excerpts', 'wp-eazyai-chatbot'); ?></a>
-            <a href="#bbpress" class="nav-tab wpeazyai-nav-tab" data-tab="bbpress"><?php echo esc_html__('BBPress', 'wp-eazyai-chatbot'); ?></a>
-        </h2>
+            <a href="#chatbot" class="nav-tab wpeazyai-nav-tab" data-tab="chatbot"><?php echo esc_html__('Chatbot', 'wp-eazyai-chatbot'); ?></a>
 
+            <a href="#globaltags" class="nav-tab wpeazyai-nav-tab" data-tab="globaltags"><?php echo esc_html__('Generate Terms and Excerpts', 'wp-eazyai-chatbot'); ?></a>
+            <a href="#bbpress" class="nav-tab wpeazyai-nav-tab" data-tab="bbpress"><?php echo esc_html__('BBPress', 'wp-eazyai-chatbot'); ?></a>
+        </h2><form method="post">
+        <div id="chatbot" class="tab-content wpeazyai-tab-pane" style="display:none">
+            <div style="margin-top:20px">
+                
+                    <table class="form-table" >
+                    <tr>
+                            <th colspan="2"><h3><?php esc_html_e('Chatbot Appearance', 'wp-eazyai-chatbot'); ?></h3></th>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><label for="wpeazyai_enabled"><?php esc_html_e('Enable Chatbot:', 'wp-eazyai-chatbot'); ?></label></th>
+                            <td><input type="checkbox" name="wpeazyai_enabled" id="wpeazyai_enabled" value="1" <?php checked(get_option('wpeazyai_enabled', true)); ?>></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><label for="wpeazyai_primary_color"><?php esc_html_e('Primary Color:', 'wp-eazyai-chatbot'); ?></label></th>
+                            <td><input type="color" name="wpeazyai_primary_color" id="wpeazyai_primary_color" value="<?php echo esc_attr(get_option('wpeazyai_primary_color', '#0066cc')); ?>"></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><label for="wpeazyai_chat_bg_color"><?php esc_html_e('Chat Background Color:', 'wp-eazyai-chatbot'); ?></label></th>
+                            <td><input type="color" name="wpeazyai_chat_bg_color" id="wpeazyai_chat_bg_color" value="<?php echo esc_attr(get_option('wpeazyai_chat_bg_color', '#f3f4f6')); ?>"></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><label for="wpeazyai_title"><?php esc_html_e('Chatbot Title:', 'wp-eazyai-chatbot'); ?></label></th>
+                            <td><input type="text" name="wpeazyai_title" id="wpeazyai_title" class="regular-text" value="<?php echo esc_attr(get_option('wpeazyai_title', 'Support')); ?>"></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><label for="wpeazyai_help_text"><?php esc_html_e('Help Text:', 'wp-eazyai-chatbot'); ?></label></th>
+                            <td><textarea name="wpeazyai_help_text" id="wpeazyai_help_text" rows="3" class="regular-text"><?php echo esc_textarea(get_option('wpeazyai_help_text', 'Ask our AI support assistant your questions about our platform, features, and services.')); ?></textarea></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><label><?php esc_html_e('Chat Icon:', 'wp-eazyai-chatbot'); ?></label></th>
+                            <td>
+                                <div class="wpeazyai-icon-select">
+                                    <?php
+                                    $icons = array(
+                                        'fa-solid fa-message' => __('Message', 'wp-eazyai-chatbot'),
+                                        'fa-regular fa-comments' => __('Comments', 'wp-eazyai-chatbot'),
+                                        'fa-regular fa-circle-question' => __('Question', 'wp-eazyai-chatbot'),
+                                        'fa-solid fa-robot' => __('Robot', 'wp-eazyai-chatbot'),
+                                        'fa-solid fa-headset' => __('Headset', 'wp-eazyai-chatbot')
+                                    );
+                                    foreach ($icons as $icon => $label) : ?>
+                                    <label>
+                                        <input type="radio" name="wpeazyai_chat_icon" value="<?php echo esc_attr($icon); ?>" <?php checked(get_option('wpeazyai_chat_icon', 'fa-regular fa-message'), $icon); ?>>
+                                        <i class="<?php echo esc_attr($icon); ?>"></i> <?php echo esc_html($label); ?>
+                                    </label>
+                                    <?php endforeach; ?>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="wpeazyai_button_text"><?php esc_html_e('Chat Button Text:', 'wp-eazyai-chatbot'); ?></label></th>
+                            <td><input type="text" name="wpeazyai_button_text" id="wpeazyai_button_text" class="regular-text" value="<?php echo esc_attr(get_option('wpeazyai_button_text', 'Help')); ?>"></td>
+                        </tr>
+                        <tr>
+                            <th colspan="2"><h3><?php esc_html_e('Pre-built Messages', 'wp-eazyai-chatbot'); ?></h3></th>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><label for="wpeazyai_prebuilt_1"><?php esc_html_e('Pre-built Message 1:', 'wp-eazyai-chatbot'); ?></label></th>
+                            <td><input type="text" name="wpeazyai_prebuilt_1" id="wpeazyai_prebuilt_1" class="regular-text" value="<?php echo esc_attr(get_option('wpeazyai_prebuilt_1', 'How do I get started?')); ?>"></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><label for="wpeazyai_prebuilt_2"><?php esc_html_e('Pre-built Message 2:', 'wp-eazyai-chatbot'); ?></label></th>
+                            <td><input type="text" name="wpeazyai_prebuilt_2" id="wpeazyai_prebuilt_2" class="regular-text" value="<?php echo esc_attr(get_option('wpeazyai_prebuilt_2', 'What features are available?')); ?>"></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><label for="wpeazyai_prebuilt_3"><?php esc_html_e('Pre-built Message 3:', 'wp-eazyai-chatbot'); ?></label></th>
+                            <td><input type="text" name="wpeazyai_prebuilt_3" id="wpeazyai_prebuilt_3" class="regular-text" value="<?php echo esc_attr(get_option('wpeazyai_prebuilt_3', 'How can I contact support?')); ?>"></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><label for="wpeazyai_welcome_message"><?php esc_html_e('Welcome Message:', 'wp-eazyai-chatbot'); ?></label></th>
+                            <td><input type="text" name="wpeazyai_welcome_message" id="wpeazyai_welcome_message" class="regular-text" value="<?php echo esc_attr(get_option('wpeazyai_welcome_message', 'What can I help you with?')); ?>"></td>
+                        </tr>
+                    </table>
+
+                                        
+
+                        <p class="submit">
+                            <input type="submit" name="wpeazyai_save_settings" class="button button-primary" value="<?php echo esc_attr__('Save Settings', 'wp-eazyai-chatbot'); ?>">
+                            <?php wp_nonce_field('wpeazyai_settings', 'wpeazyai_settings_nonce'); ?>
+                        </p>
+                    
+                    </div>
+        </div>
         
 
         <div id="config" class="tab-content wpeazyai-tab-pane" >
             <div style="margin-top:20px">
-                <form method="post">
+                
                     <table class="form-table">
                         <tr>
                             <th scope="row"><label for="wpeazyai_api_key"><?php esc_html_e('OpenAI API Key:', 'wp-eazyai-chatbot'); ?></label></th>
@@ -185,83 +278,7 @@ function wpeazyai_admin_page() {
                             </td>
                         </tr>
 
-                        <tr>
-                            <th colspan="2"><h3><?php esc_html_e('Chatbot Appearance', 'wp-eazyai-chatbot'); ?></h3></th>
-                        </tr>
-
-                        <tr>
-                            <th scope="row"><label for="wpeazyai_enabled"><?php esc_html_e('Enable Chatbot:', 'wp-eazyai-chatbot'); ?></label></th>
-                            <td><input type="checkbox" name="wpeazyai_enabled" id="wpeazyai_enabled" value="1" <?php checked(get_option('wpeazyai_enabled', true)); ?>></td>
-                        </tr>
-
-                        <tr>
-                            <th scope="row"><label for="wpeazyai_primary_color"><?php esc_html_e('Primary Color:', 'wp-eazyai-chatbot'); ?></label></th>
-                            <td><input type="color" name="wpeazyai_primary_color" id="wpeazyai_primary_color" value="<?php echo esc_attr(get_option('wpeazyai_primary_color', '#0066cc')); ?>"></td>
-                        </tr>
-
-                        <tr>
-                            <th scope="row"><label for="wpeazyai_chat_bg_color"><?php esc_html_e('Chat Background Color:', 'wp-eazyai-chatbot'); ?></label></th>
-                            <td><input type="color" name="wpeazyai_chat_bg_color" id="wpeazyai_chat_bg_color" value="<?php echo esc_attr(get_option('wpeazyai_chat_bg_color', '#f3f4f6')); ?>"></td>
-                        </tr>
-
-                        <tr>
-                            <th scope="row"><label for="wpeazyai_title"><?php esc_html_e('Chatbot Title:', 'wp-eazyai-chatbot'); ?></label></th>
-                            <td><input type="text" name="wpeazyai_title" id="wpeazyai_title" class="regular-text" value="<?php echo esc_attr(get_option('wpeazyai_title', 'Support')); ?>"></td>
-                        </tr>
-
-                        <tr>
-                            <th scope="row"><label for="wpeazyai_help_text"><?php esc_html_e('Help Text:', 'wp-eazyai-chatbot'); ?></label></th>
-                            <td><textarea name="wpeazyai_help_text" id="wpeazyai_help_text" rows="3" class="regular-text"><?php echo esc_textarea(get_option('wpeazyai_help_text', 'Ask our AI support assistant your questions about our platform, features, and services.')); ?></textarea></td>
-                        </tr>
-
-                        <tr>
-                            <th scope="row"><label><?php esc_html_e('Chat Icon:', 'wp-eazyai-chatbot'); ?></label></th>
-                            <td>
-                                <div class="wpeazyai-icon-select">
-                                    <?php
-                                    $icons = array(
-                                        'fa-solid fa-message' => __('Message', 'wp-eazyai-chatbot'),
-                                        'fa-regular fa-comments' => __('Comments', 'wp-eazyai-chatbot'),
-                                        'fa-regular fa-circle-question' => __('Question', 'wp-eazyai-chatbot'),
-                                        'fa-solid fa-robot' => __('Robot', 'wp-eazyai-chatbot'),
-                                        'fa-solid fa-headset' => __('Headset', 'wp-eazyai-chatbot')
-                                    );
-                                    foreach ($icons as $icon => $label) : ?>
-                                    <label>
-                                        <input type="radio" name="wpeazyai_chat_icon" value="<?php echo esc_attr($icon); ?>" <?php checked(get_option('wpeazyai_chat_icon', 'fa-regular fa-message'), $icon); ?>>
-                                        <i class="<?php echo esc_attr($icon); ?>"></i> <?php echo esc_html($label); ?>
-                                    </label>
-                                    <?php endforeach; ?>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row"><label for="wpeazyai_button_text"><?php esc_html_e('Chat Button Text:', 'wp-eazyai-chatbot'); ?></label></th>
-                            <td><input type="text" name="wpeazyai_button_text" id="wpeazyai_button_text" class="regular-text" value="<?php echo esc_attr(get_option('wpeazyai_button_text', 'Help')); ?>"></td>
-                        </tr>
-                        <tr>
-                            <th colspan="2"><h3><?php esc_html_e('Pre-built Messages', 'wp-eazyai-chatbot'); ?></h3></th>
-                        </tr>
-
-                        <tr>
-                            <th scope="row"><label for="wpeazyai_prebuilt_1"><?php esc_html_e('Pre-built Message 1:', 'wp-eazyai-chatbot'); ?></label></th>
-                            <td><input type="text" name="wpeazyai_prebuilt_1" id="wpeazyai_prebuilt_1" class="regular-text" value="<?php echo esc_attr(get_option('wpeazyai_prebuilt_1', 'How do I get started?')); ?>"></td>
-                        </tr>
-
-                        <tr>
-                            <th scope="row"><label for="wpeazyai_prebuilt_2"><?php esc_html_e('Pre-built Message 2:', 'wp-eazyai-chatbot'); ?></label></th>
-                            <td><input type="text" name="wpeazyai_prebuilt_2" id="wpeazyai_prebuilt_2" class="regular-text" value="<?php echo esc_attr(get_option('wpeazyai_prebuilt_2', 'What features are available?')); ?>"></td>
-                        </tr>
-
-                        <tr>
-                            <th scope="row"><label for="wpeazyai_prebuilt_3"><?php esc_html_e('Pre-built Message 3:', 'wp-eazyai-chatbot'); ?></label></th>
-                            <td><input type="text" name="wpeazyai_prebuilt_3" id="wpeazyai_prebuilt_3" class="regular-text" value="<?php echo esc_attr(get_option('wpeazyai_prebuilt_3', 'How can I contact support?')); ?>"></td>
-                        </tr>
-
-                        <tr>
-                            <th scope="row"><label for="wpeazyai_welcome_message"><?php esc_html_e('Welcome Message:', 'wp-eazyai-chatbot'); ?></label></th>
-                            <td><input type="text" name="wpeazyai_welcome_message" id="wpeazyai_welcome_message" class="regular-text" value="<?php echo esc_attr(get_option('wpeazyai_welcome_message', 'What can I help you with?')); ?>"></td>
-                        </tr>
+                        
                     </table>
 
                     
@@ -270,9 +287,10 @@ function wpeazyai_admin_page() {
                         <input type="submit" name="wpeazyai_save_settings" class="button button-primary" value="<?php echo esc_attr__('Save Settings', 'wp-eazyai-chatbot'); ?>">
                         <?php wp_nonce_field('wpeazyai_settings', 'wpeazyai_settings_nonce'); ?>
                     </p>
-                </form>
+                
             </div>
         </div>
+        </form>
         <div id="globaltags" class="tab-content wpeazyai-tab-pane" style="display:none">
             <?php 
             // Get all post types that support either taxonomies or excerpts
@@ -316,26 +334,12 @@ function wpeazyai_admin_page() {
                     </div>
                     <?php endif; ?>
 
-                    <?php if (post_type_supports($name, 'post_tags') || is_object_in_taxonomy($name, 'post_tag')): ?>
-                    <div class="option-group">
-                    <h4><?php esc_html_e('Tags Options', 'wp-eazyai-chatbot'); ?></h4>
-                    <label>
-                        <input type="checkbox" name="generate_post_tag" checked>
-                        <?php esc_html_e('Generate Tags', 'wp-eazyai-chatbot'); ?>
-                    </label>
-                    <div class="sub-option">
-                        <label>
-                        <?php esc_html_e('Number of tags:', 'wp-eazyai-chatbot'); ?>
-                        <input type="number" name="number_of_post_tag" value="5" min="1" max="10">
-                        </label>
-                    </div>
-                    </div>
-                    <?php endif; ?>
+                    
 
                     <?php 
                     $taxonomies = get_object_taxonomies($name, 'objects');
                     // Remove post_tag from taxonomies array
-                    unset($taxonomies['post_tag']);
+                    //unset($taxonomies['post_tag']);
                     unset($taxonomies['post_format']);
                     if (!empty($taxonomies)): ?>
                     <div class="option-group taxonomy-options">
@@ -577,26 +581,10 @@ function wpeazyai_admin_page() {
                                     </div>
                                     <?php endif; ?>
 
-                                    <?php if (post_type_supports($name, 'post_tags') || is_object_in_taxonomy($name, 'post_tag')): ?>
-                                    <div class="option-group">
-                                    <h4><?php esc_html_e('Tags Options', 'wp-eazyai-chatbot'); ?></h4>
-                                    <label>
-                                        <input type="checkbox" name="bbpress_generate_post_tag" checked>
-                                        <?php esc_html_e('Generate Tags', 'wp-eazyai-chatbot'); ?>
-                                    </label>
-                                    <div class="sub-option">
-                                        <label>
-                                        <?php esc_html_e('Number of tags:', 'wp-eazyai-chatbot'); ?>
-                                        <input type="number" name="bbpress_number_of_post_tag" value="5" min="1" max="10">
-                                        </label>
-                                    </div>
-                                    </div>
-                                    <?php endif; ?>
-
                                     <?php 
                                     $taxonomies = get_object_taxonomies($name, 'objects');
                                     // Remove post_tag from taxonomies array
-                                    unset($taxonomies['post_tag']);
+                                    //unset($taxonomies['post_tag']);
                                     unset($taxonomies['post_format']);
                                     if (!empty($taxonomies)): ?>
                                     <div class="option-group taxonomy-options">
