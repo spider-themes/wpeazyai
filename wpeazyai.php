@@ -1,12 +1,12 @@
 <?php
 /*
-Plugin Name: EazyAI Chatbot
-Plugin URI:  https://fiverr.com/wpfixit
+Plugin Name: WP Eazy AI
+Plugin URI:  https://spider-themes.net/
 Description: Integrating OpenAI embeddings for a chatbot, renamed to EazyAI Chatbot, with additional features such as knowledge base, tags, excerpts, and BBPress integration.
-Version:     2.3.0
-Author:      wpfixit
+Version:     0.0.1
+Author:      Spider Themes
 License:     GPLv2 or later
-text-domain: 'wp-eazyai-chatbot'
+text-domain: 'wp-eazyai'
 */
 
 if (!defined('ABSPATH')) {

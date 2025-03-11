@@ -22,7 +22,7 @@ function wpeazyai_chatbot_shortcode() {
     ob_start();
     
     // Check if enabled
-    if (!get_option('wpeazyai_enabled', true)) {
+    if ( !get_option('wpeazyai_enabled', true) ) {
         return '';
     }
     ?>
@@ -45,7 +45,7 @@ function wpeazyai_chatbot_shortcode() {
             </div>
         </div>
         <div id="suggested-questions" class="px-3 py-2 border-top">
-            <p class="text-muted small mb-2"><?php esc_html_e('Not sure what to ask?', 'wp-eazyai-chatbot'); ?></p>
+            <p class="text-muted small mb-2"><?php esc_html_e('Not sure what to ask?', 'wp-eazyai'); ?></p>
             <button onclick="$('#eazybotinput').val($(this).text()); $('#eazybotsend').click();" class="btn btn-light w-100 text-start p-2 mb-1 small">
                 <?php echo esc_html(get_option('wpeazyai_prebuilt_1', 'How do I get started?')); ?>
             </button>
@@ -68,7 +68,9 @@ function wpeazyai_chatbot_shortcode() {
         <div class="d-flex align-items-center gap-2">
             <i class="fas <?php echo esc_attr(get_option('wpeazyai_chat_icon', 'fa-question')); ?>" id="help-icon"></i>
             <i class="fas fa-times d-none" id="close-icon"></i>
-            <span><?php echo esc_html(get_option('wpeazyai_button_text', 'Help')); ?></span>
+            <?php if ( !empty( get_option('wpeazyai_button_text')) ) : ?>
+            <span> <?php echo esc_html(get_option('wpeazyai_button_text', 'Help')); ?> </span>
+            <?php endif; ?>
         </div>
     </button>
 

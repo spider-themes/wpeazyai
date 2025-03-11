@@ -27,7 +27,7 @@ jQuery(document).ready(function () {
             e.preventDefault();
             // Use WordPress translation function if available, fallback to default message
             e.returnValue = (typeof wp !== 'undefined' && wp.i18n) 
-                ? wp.i18n.__('You have an active chat session. Are you sure you want to leave?', 'wp-eazyai-chatbot')
+                ? wp.i18n.__('You have an active chat session. Are you sure you want to leave?', 'wp-eazyai')
                 : 'You have an active chat session. Are you sure you want to leave?';
         }
     });

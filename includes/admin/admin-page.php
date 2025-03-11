@@ -20,10 +20,10 @@ if (!defined('ABSPATH')) {
 add_action('admin_menu', 'wpeazyai_admin_menu');
 function wpeazyai_admin_menu() {
     $hook = add_menu_page(
-        __('EazyAI Chatbot', 'wp-eazyai-chatbot'),
-        __('EazyAI Chatbot', 'wp-eazyai-chatbot'),
+        __('EazyAI Chatbot', 'wp-eazyai'),
+        __('EazyAI Chatbot', 'wp-eazyai'),
         'manage_options',
-        'wp-eazyai-chatbot',
+        'wp-eazyai',
         'wpeazyai_admin_page',
         'dashicons-format-chat'
     );
@@ -57,7 +57,7 @@ add_action('admin_enqueue_scripts', 'wpeazyai_admin_scripts');
 function wpeazyai_add_screen_options() {
     $option = 'per_page';
     $args = array(
-        'label' => __('Topics per page', 'wp-eazyai-chatbot'),
+        'label' => __('Topics per page', 'wp-eazyai'),
         'default' => 20,
         'option' => 'topics_per_page'
     );

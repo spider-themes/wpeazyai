@@ -41,11 +41,11 @@
             },
             error: function() {
 			// Use wp.i18n for internationalization
-			alert(wp.i18n.__('Network error occurred while generating excerpt', 'wp-eazyai-chatbot'));
+			alert(wp.i18n.__('Network error occurred while generating excerpt', 'wp-eazyai'));
             }
             });
 			// Use wp.i18n for internationalization
-			alert(wp.i18n.__('Generating with approx. ' + sliderVal + ' words, please wait...', 'wp-eazyai-chatbot'));
+			alert(wp.i18n.__('Generating with approx. ' + sliderVal + ' words, please wait...', 'wp-eazyai'));
         };
 
         const handleAccept = () => {
@@ -64,7 +64,7 @@
             setTempExcerpt('');
 			setShowButtons(false);
 			// Use wp.i18n for internationalization
-			alert(wp.i18n.__('Generated excerpt discarded', 'wp-eazyai-chatbot'));
+			alert(wp.i18n.__('Generated excerpt discarded', 'wp-eazyai'));
         };
 
 		// We’re using raw createElement calls for a quick example,
@@ -76,7 +76,7 @@
 				createElement(
 					'label',
 					{ key: 'label', style: { display: 'block', marginBottom: '0.5em' } },
-					wp.i18n.__('Desired Length (in words):', 'wp-eazyai-chatbot')
+					wp.i18n.__('Desired Length (in words):', 'wp-eazyai')
 				),
 				createElement(
 					'input',
@@ -93,33 +93,33 @@
 				createElement(
 					'span',
 					{ key: 'val' },
-					sliderVal + wp.i18n.__(' words', 'wp-eazyai-chatbot')
+					sliderVal + wp.i18n.__(' words', 'wp-eazyai')
 				),
 				createElement(
 					'p',
 					{ key: 'desc', className: 'description' },
-					wp.i18n.__('Adjust how many words to generate for the excerpt.', 'wp-eazyai-chatbot')
+					wp.i18n.__('Adjust how many words to generate for the excerpt.', 'wp-eazyai')
 				),
 				createElement(
 					'button',
 					{ key: 'generateBtn', className: 'button button-primary', onClick: handleGenerate, style: { marginRight: '1em' } },
-					wp.i18n.__('Generate', 'wp-eazyai-chatbot')
+					wp.i18n.__('Generate', 'wp-eazyai')
 				),
                 
 				showButtons && createElement(
 					'button',
 					{ key: 'acceptBtn', className: 'button button-primary', onClick: handleAccept, style: { marginRight: '1em' } },
-					wp.i18n.__('Accept', 'wp-eazyai-chatbot')
+					wp.i18n.__('Accept', 'wp-eazyai')
 				),
 				showButtons && createElement(
 					'button',
 					{ key: 'discardBtn', className: 'button button-secondary', onClick: handleDiscard },
-					wp.i18n.__('Discard', 'wp-eazyai-chatbot')
+					wp.i18n.__('Discard', 'wp-eazyai')
 				),
                 tempExcerpt && createElement(
                     'p',
                     { key: 'tempExcerpt', style: { marginTop: '1em' } },
-                    wp.i18n.__('Generated Excerpt:', 'wp-eazyai-chatbot') + tempExcerpt
+                    wp.i18n.__('Generated Excerpt:', 'wp-eazyai') + tempExcerpt
                 )
 			]
 		);

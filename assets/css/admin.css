@@ -46,7 +46,7 @@
         float: none;
         text-align: center;
     }
-    
+
     .tablenav-pages a,
     .tablenav-pages span {
         padding: 6px 14px;
@@ -54,7 +54,10 @@
     }
 }
 
-.tab-content { padding: 15px 0; }
+.tab-content {
+    padding: 15px 0;
+}
+
 .time-estimates {
     margin: 15px 0;
     padding: 10px;
@@ -74,12 +77,14 @@
     gap: 15px;
     margin: 5px 0;
 }
+
 .wpeazyai-icon-select label {
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 5px;
 }
+
 .wpeazyai-icon-select input[type="radio"] {
     margin-right: 5px;
 }
@@ -87,42 +92,52 @@
 .post-type-accordion {
     border: 1px solid #ccc;
     margin: 20px 0;
-    }
+
     .accordion-item {
-    border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
     }
+
     .accordion-item:last-child {
-    border-bottom: none;
+        border-bottom: none;
     }
+
     .accordion-header {
-    padding: 10px 15px;
-    background: #f5f5f5;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
+        padding: 10px 15px;
+        background: #f5f5f5;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
     }
+
     .accordion-header:hover {
-    background: #f0f0f0;
+        background: #f0f0f0;
     }
+
     .accordion-content {
-    padding: 15px;
-    background: #fff;
+        padding: 15px;
+        background: #fff;
     }
+
     .toggle-icon {
-    margin-left: auto;
-    transition: transform 0.3s;
+        margin-left: auto;
+        transition: transform 0.3s;
     }
+
     .option-group {
-    margin-bottom: 20px;
+        margin-bottom: 20px;
     }
+
     .option-group h4 {
-    margin: 0 0 10px 0;
+        margin: 0 0 10px 0;
     }
+
     .sub-option {
-    margin-left: 25px;
-    margin-top: 10px;
+        margin-left: 25px;
+        margin-top: 10px;
     }
+
     .sub-option label {
-    display: block;
-    margin-bottom: 5px;
+        display: block;
+        margin-bottom: 5px;
     }
+}

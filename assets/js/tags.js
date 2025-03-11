@@ -76,7 +76,7 @@
                 });
                 savePost();
             } catch (err) {
-                alert(__('Error generating categories/tags: ', 'wp-eazyai-chatbot') + err.message);
+                alert(__('Error generating categories/tags: ', 'wp-eazyai') + err.message);
             } finally {
                 setIsLoading(false);
             }
@@ -87,7 +87,7 @@
             PluginDocumentSettingPanel,
             {
                 name: 'my-ai-cats-tags-panel',
-                title: __('AI Categories & Tags', 'wp-eazyai-chatbot'),
+                title: __('AI Categories & Tags', 'wp-eazyai'),
                 className: 'my-ai-cats-tags-panel',
             },
             // Children of PluginDocumentSettingPanel can be multiple createElement calls:
@@ -97,7 +97,7 @@
                     PanelRow,
                     { key: 'row-slider' },
                     createElement(RangeControl, {
-                        label: __('Desired # of Categories', 'wp-eazyai-chatbot'),
+                        label: __('Desired # of Categories', 'wp-eazyai'),
                         min: 1,
                         max: 10,
                         value: desiredCats,
@@ -117,8 +117,8 @@
                             disabled: isLoading,
                         },
                         isLoading
-                            ? __('Generating...', 'wp-eazyai-chatbot')
-                            : __('Generate via AI', 'wp-eazyai-chatbot')
+                            ? __('Generating...', 'wp-eazyai')
+                            : __('Generate via AI', 'wp-eazyai')
                     ),
                     // If loading, also show a Spinner
                     isLoading && createElement(Spinner, { key: 'spinner' })
