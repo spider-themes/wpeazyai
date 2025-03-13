@@ -16,7 +16,7 @@ function wpeazyai_enqueue_chatbot_scripts() {
     if (!get_option('wpeazyai_enabled', true)) {
         return;
     }
-    wp_enqueue_style('wpeazyai-chatbot-bootstrap', EAZYAI_CHATBOT_URL. 'assets/lib/bootstrap/css/bootstrap.min.css');
+    // wp_enqueue_style('wpeazyai-chatbot-bootstrap', EAZYAI_CHATBOT_URL. 'assets/lib/bootstrap/css/bootstrap.min.css');
     wp_enqueue_script('jquery');
     wp_enqueue_script('wpeazyai-chatbot-custom-js', EAZYAI_CHATBOT_URL . 'assets/js/custom.js?v=' . wp_rand(), array('jquery'), null, true);
     wp_enqueue_style('wpeazyai-chatbot-custom-css', EAZYAI_CHATBOT_URL . 'assets/css/custom.css?v=' . wp_rand());
