@@ -105,7 +105,7 @@
 					{ key: 'generateBtn', className: 'button button-primary', onClick: handleGenerate, style: { marginRight: '1em' } },
 					wp.i18n.__('Generate', 'wp-eazyai')
 				),
-                
+
 				showButtons && createElement(
 					'button',
 					{ key: 'acceptBtn', className: 'button button-primary', onClick: handleAccept, style: { marginRight: '1em' } },
@@ -146,6 +146,7 @@
 			root.render(createElement(MyExcerptAi));
 		}
 	};
+
 	/**
 	 * 2. Wait for the Block Editor to be “ready,”
 	 *    then look for the excerpt panel DOM element.

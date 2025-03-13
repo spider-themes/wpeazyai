@@ -1,6 +1,4 @@
 <?php
-
-
 /**
  * Handle OPENAI Chats for WP EazyAI Chatbot
  *
@@ -12,7 +10,6 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-
 
 /**
  * 5. AJAX handler to generate chatbot responses using top matching chunks.

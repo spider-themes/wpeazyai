@@ -22,6 +22,7 @@ jQuery(document).ready(function () {
         $('#suggested-questions').hide();
         $('#eazybotinput').val('');
     });
+
     // Handle Enter key press
     $('#eazybotinput').keypress(function(e) {
         if (e.which == 13) {
@@ -29,6 +30,7 @@ jQuery(document).ready(function () {
             return false;
         }
     });
+
     // Add beforeunload event listener
     window.addEventListener('beforeunload', function (e) {
         if (window.chatSessionActive) {
@@ -39,6 +41,7 @@ jQuery(document).ready(function () {
                 : 'You have an active chat session. Are you sure you want to leave?';
         }
     });
+
     // EazyAI Chatbot Message Sending
     jQuery(document).on('click', '#eazybotsend', function () {
         const message = $('#eazybotinput').val();
@@ -70,30 +73,6 @@ jQuery(document).ready(function () {
 
                     if (response.success) {
                         appendMsgEl(response.data.answer, "bot");
-
-                        // $('.eazybotchatbox').append(`
-                        //     <div class="d-flex align-items-start mb-3">
-                        //         <img class="rounded-circle me-2" src="${eazyai_chatbot_vars.bot_avatar}" alt="Chatbot Avatar" style="width: 32px; height: 32px;" />
-                        //         <div class="bg-light p-2 rounded">
-                        //             <p>${response.data.answer}</p>
-                        //             <div class="mt-1">
-                        //                 ${response.data.references.length > 0 ? `
-                        //                     <div class="text-muted small mb-1">
-                        //                         <button class="btn btn-link p-0 text-decoration-none" onclick="this.nextElementSibling.classList.toggle('d-none')">
-                        //                             Sources &#9660;
-                        //                         </button>
-                        //                         <div class="d-none mt-1">
-                        //                             ${[...new Set(response.data.references.map(ref => ref.link))].map(link => {
-                        //                                 const ref = response.data.references.find(r => r.link === link);
-                        //                                 return `<a href="${link}" class="small text-primary d-block">${ref.title || 'Source'}</a>`;
-                        //                             }).join('')}
-                        //                         </div>
-                        //                     </div>
-                        //                 ` : ''}
-                        //             </div>
-                        //         </div>
-                        //     </div>
-                        // `);
                     } else {
                         // alert('Error: ' + response.data.message);
                         appendMsgEl('Sorry! can\'t help you right now. Something went wrong.', 'bot');
