@@ -51,7 +51,7 @@ add_filter('eazydocs_assistant_tab', function ($tabs) {
     ) {
         $tabs[] = [
             'id'      => 'wpeazyai_merge_eazydocs',
-            'heading' => get_option('wpeazyai_chatbot_label', 'Ai Chat'),
+            'heading' => ! empty( get_option('wpeazyai_chatbot_label') ) ? get_option('wpeazyai_chatbot_label') : __( 'AI Chat', 'wp-eazyai' ),
             'content' => do_shortcode('[wpeazyai_chatbot]'),
         ];
     }
