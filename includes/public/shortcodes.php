@@ -8,7 +8,7 @@
  */
 
 // Exit if accessed directly
-if (!defined('ABSPATH')) {
+if ( ! defined('ABSPATH') ) {
     exit;
 }
 
@@ -22,7 +22,7 @@ function wpeazyai_chatbot_shortcode() {
     ob_start();
     
     // Check if enabled
-    if ( !get_option('wpeazyai_enabled', true) ) {
+    if ( ! get_option('wpeazyai_enabled', true) ) {
         return '';
     }
     ?>
@@ -69,17 +69,32 @@ function wpeazyai_chatbot_shortcode() {
         </div>
     </div>
 
-    <button id="eazyai-help-button" onclick="EazyBotToggleChat()">
-        <div>
-            <i class="fas <?php echo esc_attr(get_option('wpeazyai_chat_icon', 'fa-question')); ?>" id="help-icon"></i>
-            <i class="fas fa-times" id="close-icon"></i>
-            <?php if ( !empty( get_option('wpeazyai_button_text')) ) : ?>
-            <span> <?php echo esc_html(get_option('wpeazyai_button_text', 'Help')); ?> </span>
-            <?php endif; ?>
-        </div>
-    </button>
-
     <?php
+
+    // Ensure the function exists before using it
+    if ( ! function_exists('is_plugin_active') ) {
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+    }
+
+    $is_merge = '';
+    // Check if merge is enabled and both plugins are active
+    if ( is_plugin_active('eazydocs/eazydocs.php') && is_plugin_active('eazydocs-pro/eazydocs.php') ) {
+        $is_merge = get_option('wpeazyai_merge_eazydocs');
+    }
+    if ( $is_merge != 1 ) :
+        ?>
+        <button id="eazyai-help-button" onclick="EazyBotToggleChat()">
+            <div>
+                <i class="fas <?php echo esc_attr(get_option('wpeazyai_chat_icon', 'fa-question')); ?>" id="help-icon"></i>
+                <i class="fas fa-times" id="close-icon"></i>
+                <?php if ( ! empty( get_option('wpeazyai_button_text') ) ) : ?>
+                    <span> <?php echo esc_html(get_option('wpeazyai_button_text', 'Help')); ?> </span>
+                <?php endif; ?>
+            </div>
+        </button>
+        <?php
+    endif;
+    
     return ob_get_clean();
 }
 add_shortcode('wpeazyai_chatbot', 'wpeazyai_chatbot_shortcode');

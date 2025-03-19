@@ -34,4 +34,33 @@ jQuery(document).ready(function($) {
         // Store active tab in localStorage
         localStorage.setItem('wpeazyai_active_tab', tabId);
     });
+
+    // Settings for ai chat with eazydocs assistant
+    function aiChatToggleFields() {
+        if ($('#wpeazyai_enabled').is(':checked')) {
+            $('#merge_with_eazydocs_row').show();
+            
+            if ($('#wpeazyai_merge_eazydocs').is(':checked')) {
+                $('#chatbox_position_row').show(); 
+                $('#ai_chat_label').show();
+            } else {
+                $('#chatbox_position_row').hide();
+                $('#ai_chat_label').hide();
+            }
+        } else {
+            $('#merge_with_eazydocs_row').hide();
+            $('#ai_chat_label').hide();
+            $('#chatbox_position_row').hide();
+        }
+    }
+
+    // Initial check on page load
+    aiChatToggleFields();
+
+    // Toggle fields on checkbox change
+    $('#wpeazyai_enabled, #wpeazyai_merge_eazydocs').change(function() {
+        aiChatToggleFields();
+    });
+
 });
+ 

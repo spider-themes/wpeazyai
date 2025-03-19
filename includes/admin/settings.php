@@ -33,6 +33,9 @@ function wpeazyai_admin_page() {
         update_option('wpeazyai_api_key', $api_key);
         $post_types = isset($_POST['wpeazyai_post_types']) ? array_map('sanitize_text_field', $_POST['wpeazyai_post_types']) : [];
         update_option('wpeazyai_enabled', isset($_POST['wpeazyai_enabled']) ? 1 : 0);
+        update_option('wpeazyai_merge_eazydocs', isset($_POST['wpeazyai_merge_eazydocs']) ? 1 : 0);
+        update_option('wpeazyai_chatbox_position', sanitize_text_field($_POST['wpeazyai_chatbox_position']));
+        update_option('wpeazyai_chatbot_label', sanitize_text_field($_POST['wpeazyai_chatbot_label']));
         update_option('wpeazyai_selected_post_types', $post_types);
         update_option('wpeazyai_primary_color', sanitize_text_field($_POST['wpeazyai_primary_color']));
         update_option('wpeazyai_chat_bg_color', sanitize_text_field($_POST['wpeazyai_chat_bg_color']));
@@ -75,15 +78,69 @@ function wpeazyai_admin_page() {
             <div style="margin-top:20px">
                 
                     <table class="form-table" >
-                    <tr>
+                        <tr>
                             <th colspan="2"><h3><?php esc_html_e('Chatbot Appearance', 'wp-eazyai'); ?></h3></th>
                         </tr>
-
+                        
                         <tr>
                             <th scope="row"><label for="wpeazyai_enabled"><?php esc_html_e('Enable Chatbot:', 'wp-eazyai'); ?></label></th>
                             <td><input type="checkbox" name="wpeazyai_enabled" id="wpeazyai_enabled" value="1" <?php checked(get_option('wpeazyai_enabled', true)); ?>></td>
                         </tr>
 
+                        <?php
+                        // Ensure the function exists before using it
+                        if ( ! function_exists('is_plugin_active') ) {
+                            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+                        }
+
+                        if ( is_plugin_active( 'eazydocs-pro/eazydocs.php' ) && is_plugin_active( 'eazydocs/eazydocs.php' ) ) :
+                            $is_merge_enabled = get_option( 'wpeazyai_merge_eazydocs', true );
+                            $chatbox_position = get_option( 'wpeazyai_chatbox_position', 'after-tabs' ); // Default position
+                            ?>
+                            <tr id="merge_with_eazydocs_row" style="display: none;">
+                                <th scope="row">
+                                    <label for="wpeazyai_merge_eazydocs">
+                                        <?php esc_html_e('Merge Chatbot with EazyDocs Assistant?', 'wp-eazyai'); ?>
+                                    </label>
+                                </th>
+                                <td>
+                                    <input type="checkbox" name="wpeazyai_merge_eazydocs" id="wpeazyai_merge_eazydocs" value="1" <?php checked( $is_merge_enabled, '1' ); ?>>
+                                </td>
+                            </tr>
+
+                            <tr id="ai_chat_label" style="display: none;">
+                                <th scope="row">
+                                    <label for="wpeazyai_chatbot_label">
+                                        <?php esc_html_e('Chatbot Label', 'wp-eazyai'); ?>
+                                    </label>
+                                </th>
+                             
+                                <td>
+                                    <input type="text" name="wpeazyai_chatbot_label" id="wpeazyai_chatbot_label" class="regular-text" value="<?php echo esc_attr(get_option('wpeazyai_chatbot_label', 'Ai Chat')); ?>">
+                                </td>
+                            </tr>
+
+                            <tr id="chatbox_position_row" style="display: none;">
+                                <th scope="row">
+                                    <label for="wpeazyai_chatbox_position">
+                                        <?php esc_html_e( 'Chatbot Position:', 'wp-eazyai' ); ?>
+                                    </label>
+                                </th>
+                                <td>
+                                    <select name="wpeazyai_chatbox_position" id="wpeazyai_chatbox_position">
+                                        <option value="before-tabs" <?php selected( $chatbox_position, 'before-tabs' ); ?>>
+                                            <?php esc_html_e( 'Before Assistant Tabs', 'wp-eazyai' ); ?>
+                                        </option>
+                                        <option value="after-tabs" <?php selected( $chatbox_position, 'after-tabs' ); ?>>
+                                            <?php esc_html_e( 'After Assistant Tabs', 'wp-eazyai' ); ?>
+                                        </option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <?php 
+                        endif; 
+                        ?>
+                        
                         <tr>
                             <th scope="row"><label for="wpeazyai_primary_color"><?php esc_html_e('Primary Color:', 'wp-eazyai'); ?></label></th>
                             <td><input type="color" name="wpeazyai_primary_color" id="wpeazyai_primary_color" value="<?php echo esc_attr(get_option('wpeazyai_primary_color', '#0066cc')); ?>"></td>

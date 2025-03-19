@@ -22,6 +22,41 @@ img.wpeazyai_icons {
     width: 16px;
 }
 
+.assistant-content[tab-content="wpeazyai_merge_eazydocs"].active{
+    margin: -100px -11px 0 -15px; 
+}
+
+.assistant-content[tab-content="wpeazyai_merge_eazydocs"].active div#eazyai-chatbox #eazyai-chatbox-inner-wrapper {
+    height: 93%;
+    position: absolute;
+    bottom: 0;
+    top: 40px;
+}
+
+.assistant-content[tab-content="wpeazyai_merge_eazydocs"] #eazyai-chatbox-header-text strong {
+    margin-left: 5px;
+}
+
+.assistant-content[tab-content="wpeazyai_merge_eazydocs"].active div#eazyai-chatbox #eazyai-chatbox-inner-wrapper #eazyai-chatbox-header {
+    background-color: var(--ezd_brand_color);
+}
+
+.assistant-content[tab-content="wpeazyai_merge_eazydocs"] #eazyai-chatbox {
+    display: block !important;
+    position: unset;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.assistant-content[tab-content="wpeazyai_merge_eazydocs"] #eazyai-chatbox i {
+    font-family: 'Font Awesome 6 Free';
+}
+
+.assistant-content[tab-content="wpeazyai_merge_eazydocs"] div#eazyai-chatbox #eazyai-chatbox-inner-wrapper #eazyai-chatbox-header #eazyai-chatbox-header-text {
+    text-align: left;
+}
+
 div#eazyai-chatbox {
     width: min(400px, calc(100vw - 32px));
     height: min(600px, calc(100vh - 108px));
